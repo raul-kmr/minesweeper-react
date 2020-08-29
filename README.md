@@ -4,6 +4,7 @@ The classic minesweeper Game built in ReactJs
 This project template was built with Create React App, which provides a simple way to start React projects with no build configuration needed.
 
 How to run Minesweeper project:
+
 git clone https://github.com/raul-kmr/minesweeper-react.git
 
 cd minesweeper-react
