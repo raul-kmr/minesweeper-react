@@ -1,5 +1,4 @@
 import React from 'react';
-//import PropTypes from 'prop-types';
 
 export default class Cell extends React.Component {
   getValue() {
@@ -37,18 +36,3 @@ export default class Cell extends React.Component {
   }
 }
 
-/*const cellItemShape = {
-    isRevealed: PropTypes.bool,
-    isMine: PropTypes.bool,
-    isFlagged: PropTypes.bool,
-    isEmpty: PropTypes.bool,
-    neighbour: PropTypes.number,
-    x: PropTypes.number,
-    y: PropTypes.number
-}
-
-Cell.propTypes = {
-  value: PropTypes.objectOf(PropTypes.shape(cellItemShape)),
-  onClick: PropTypes.func,
-  cMenu: PropTypes.func
-}*/
