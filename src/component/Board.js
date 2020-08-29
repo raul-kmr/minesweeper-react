@@ -3,28 +3,56 @@ import PropTypes from 'prop-types';
 import Cell from './Cell';
 
 export default class Board extends React.Component {
-  state = {
-    boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
-    gameStatus: "Game in progress",
-    mineCount: this.props.mines,
-    time : 0,
-    timerRef :0
-    //btnText : 'Start'
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+      gameStatus: "Game in progress",
+      mineCount: this.props.mines,
+      time : 0,
+      timerRef :0,
+      restart : false,
+      btnText : 'ReStart'
+    };  
+  }
+  
 
   /* Helper Functions */
 
- /* handleStart(){
+  handleStart(){
+    let brdData = this.initBoardData(this.props.height, this.props.width, this.props.mines)
+    this.setState({boardData:brdData,mineCount:this.props.mines,restart:false});
     let timer = 0;
     let ref = this
-    let timeout = setInterval(function(){
+    /*let timeout = setInterval(function(){
       timer++;
       if(timer>=999)
         timer=999;
       ref.setState({time:timer})
     },1000)
-    //clearInterval(timeout)
-  }*/
+    console.log(timeout)
+    clearInterval(timeout)*/
+    this.stopTimer();
+    this.startTimer();
+  }
+
+  startTimer=()=>{//console.log(this.timerId,'asdsd',this.state.time)
+    if(!this.timerId){ 
+    let ref=this,timer=0    
+      this.timerId = setInterval(()=>{
+        timer++;
+        if(timer>=999)
+          timer=999;
+        ref.setState({time:timer})
+      }, 1000);
+    }
+  }
+
+  stopTimer=()=>{
+    clearInterval(this.timerId);
+    this.timerId=null
+    this.setState({time:0});
+  }
   // Gets initial board data
   initBoardData(height, width, mines) {
     let data = this.createEmptyArray(height, width);
@@ -235,12 +263,16 @@ export default class Board extends React.Component {
   // Handle User Events
 
   handleCellClick(x, y) {
-
+    if(!this.state.restart){
+      this.startTimer()
+      this.setState({restart:true})
+    }
     // check if revealed. return if true.
     if (this.state.boardData[x][y].isRevealed || this.state.boardData[x][y].isFlagged) return null;
 
     // check if mine. game over if true
     if (this.state.boardData[x][y].isMine) {
+      this.stopTimer()
       this.setState({ gameStatus: "You Lost." });
       this.revealBoard();
       clearInterval(this.state.timerRef)
@@ -256,6 +288,7 @@ export default class Board extends React.Component {
     }
 
     if (this.getHidden(updatedData).length === this.props.mines) {
+      this.stopTimer()
       this.setState({ mineCount: 0, gameStatus: "You Won." });
       this.revealBoard();
       alert("You Win");
@@ -279,8 +312,10 @@ export default class Board extends React.Component {
       updatedData[x][y].isFlagged = false;
       mines++;
     } else {
-      updatedData[x][y].isFlagged = true;
-      mines--;
+      if(mines>0){
+        mines--;
+        updatedData[x][y].isFlagged = true; 
+      }
     }
 
     if (mines === 0) {
@@ -316,14 +351,16 @@ export default class Board extends React.Component {
 
   }
 
-  render() {console.log(this.state.timerRef)
+  render() {//console.log(this.state.boardData,this.state.mineCount)
     return (
       <div className="board">
         <div className="game-info">
           <span className="info">Mines remaining: {this.state.mineCount}</span>
           <h1 className="info">{this.state.gameStatus}</h1>
           <h1 className="info">Time : {this.state.time}</h1>
-         {/* <button onClick={()=>this.handleStart()}>{this.state.btnText}</button>*/}
+          {this.state.restart&&
+            <button className="myButton" onClick={()=>this.handleStart()}>{this.state.btnText}</button>
+          }
         </div>
         {
           this.renderBoard(this.state.boardData)
